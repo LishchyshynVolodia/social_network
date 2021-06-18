@@ -1,42 +1,37 @@
-import React from 'react';
-import './App.css';
-import {Nav} from "./components/Navbar/Nav";
-import {Header} from "./components/Header/Header";
+import React, {useEffect, useState} from 'react';
+import axios from "axios";
+import {BrowserRouter, Route} from "react-router-dom";
+import {TopRatedFilms} from "./Components/TopRatedFilms/TopRatedFilms";
+import {MoreDetails} from "./Components/MoreDetails/MoreDetails";
 
-import {Route} from "react-router-dom";
-import {Profile} from "./components/Profile/Profile";
-import {News} from "./components/News/News";
-import {Music} from "./components/Music/Music";
-import DialogsContainer from "./components/Dialogs/dialog_container";
-import Users from "./components/Users/Users";
-import UsersContainer from "./components/Users/UsersContainer";
 
-// type AppType = {
-//     state: RootStateType
-//     // addPost: (m: string) => void;
-//     // updateNewPost: (t: string) => void
-//     dispatch:any
-//     store:any
-//
-// }
+export type FilmsType = {
+    adult: boolean;
+    length: number;
+    id: number;
+    poster_path: string;
+    title: string;
+    vote_average: number;
+}
 
 
 function App() {
+    const [films, setFilms] = useState<Array<FilmsType>>([])
+    useEffect(
+        () => {
+            axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=b7b614211e0d6528dea1ff782fe58bef').then((response: any) => {
+                setFilms(response.data.results)
+            });
+        }
+        , []
+    )
     return (
-            <div className="app-wrapper">
-                <Header/>
-                <Nav/>
-                <div className="app-wrapper-content">
-                    <Route exact path="/dialogs" render={() =>  <DialogsContainer />}/>
-                    <Route exact path="/profile"
-                           render={() => <Profile />}/>
-                    <Route exact path="/news" render={() => <News/>}/>
-                    <Route exact path="music" render={() => <Music/>}/>
-                    <Route exact path="/Users" render={() => <UsersContainer/>}/>
-                </div>
-            </div>
+        <BrowserRouter>
+            <Route path="/react_social_network_ts/:id" render={() => <MoreDetails/>}/>
+            <Route exact path="/react_social_network_ts" render={() => <TopRatedFilms films={films}/>}/>
+        </BrowserRouter>
     );
 }
 
-export default App;
 
+export default App
